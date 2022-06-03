@@ -5,4 +5,4 @@ The package is mainly based on "https://github.com/efc-robot/Explore-Bench"; rel
 
 The code called "Map_metrics" is from "https://blog.lxsang.me/post/id/21" except for the map alignement. 
 
-This package compute all the metrics an exploration experiment
+This package compute all the metrics of the  exploration experiment
