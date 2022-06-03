@@ -1,0 +1,6 @@
+<launch>
+  <arg name="file_name"  default="map_merge"/>
+  <node name="map_saver2" pkg="map_server" type="map_saver" args="-f $(find metrics_compute)/$(arg file_name) ">
+     <remap from="/map" to="/map_merge" />
+  </node>
+</launch>
