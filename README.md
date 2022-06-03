@@ -4,7 +4,7 @@ Code used in my Master thesis. All the credits are given in the corresponding fo
 How code are working : 
 It is assumed that ROS noetic is already correctly working. 
 
-To correctly work the following package are requiered :
+The following package are requiered :
 - Cpu monitor : https://github.com/alspitz/cpu_monitor/blob/master/launch/cpu_monitor.launch
 - Turtlebot3 description : https://github.com/ROBOTIS-GIT/turtlebot3/tree/master/turtlebot3_description
 - Aws robotic environment : https://github.com/aws-robotics/aws-robomaker-bookstore-world
