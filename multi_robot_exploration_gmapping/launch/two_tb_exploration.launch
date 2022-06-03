@@ -1,0 +1,223 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="first_tb3"  default="tb3_0"/>
+  <arg name="second_tb3" default="tb3_1"/>
+  <arg name="known_initial_pos" default="true"/>
+  <param name="total_ground_truth_area" value="167"/>
+  <arg name="first_tb3_x_pos" default="0.0"/>
+  <arg name="first_tb3_y_pos" default=" -1.0"/>
+ 
+  <arg name="second_tb3_x_pos" default="0.0"/>
+  <arg name="second_tb3_y_pos" default=" 0"/>
+  
+  
+    <!-- Open two tb in gazebo and give spawn positions -->
+  <include file="$(find multi_robot_exploration)/launch/spawn_robots.launch">
+    <arg name="first_tb3_x_pos" value="$(arg first_tb3_x_pos)"/>
+    <arg name="first_tb3_y_pos" value="$(arg first_tb3_y_pos)"/>
+    
+    <arg name="second_tb3_x_pos" value="$(arg second_tb3_x_pos)"/>
+    <arg name="second_tb3_y_pos" value="$(arg second_tb3_y_pos)"/>
+ 
+  </include>
+  
+  <!-- Merge the two robot maps -->
+ <include file="$(find multi_robot_exploration)/launch/multi_robot_map_merge.launch">
+  </include>
+
+  <group ns ="$(arg first_tb3)">
+    <include file="$(find multi_robot_exploration)/launch/modified_move_base.launch">
+    <arg name="ns"  value="tb3_0"/>
+    </include>
+ </group>
+ 
+
+  <group ns ="$(arg second_tb3)">
+    <include file="$(find multi_robot_exploration)/launch/modified_move_base.launch">
+    <arg name="ns"  value="tb3_1"/>
+    </include>
+ </group> 
+ 
+ 
+ 
+  
+   <node pkg="metrics_compute" type="auto.py" name="metrics" output="screen"  >
+
+  </node>
+  
+   <node pkg="cpu_monitor" name="cpu_monitor" type="monitor.py" output="screen">
+    <param name="poll_period" value="5.0"/>
+  </node>
+
+   <node pkg="costmap_2d" type="costmap_2d_node" name="costmap_for_exploration_global" respawn="true" >
+    
+    <rosparam ns="costmap" subst_value="true">
+      global_frame: tb3_0/map
+      robot_base_frame: tb3_0/base_footprint
+      update_frequency: 10.0
+      publish_frequency: 10.0
+      rolling_window: false
+      always_send_full_costmap: true
+      # Map management parameters
+      unknown_cost_value: 255
+      
+      robot_radius: 0.3
+      plugins: 
+        - {name: static, type: "costmap_2d::StaticLayer"}
+        - {name: inflation,        type: "costmap_2d::InflationLayer"}  
+      static:
+        #Can pull data from gmapping, map_server or a non-rolling costmap            
+        map_topic: map_merge
+        subscribe_to_updates: true 
+      inflation:
+        inflation_radius: 0.1
+
+    </rosparam>
+  </node>
+ 
+  <group ns = "$(arg first_tb3)">
+
+
+   <node pkg="frontier_allocation" type="frontier_detection" name="frontier_detection" output="screen">
+      <param name="map" value="/costmap_for_exploration_global/costmap/costmap"/>
+      <param name="min_frontier_size_px" value="30"/>
+      <param name="base_frame" value="/tb3_0/base_footprint"/>
+      <param name="frontiers_topic" value="/tb3_0/frontiers"/>
+
+
+
+
+    </node>
+  
+      <node pkg="frontier_allocation" type="frontier_allocation" name="frontier_allocation" output="screen">
+      <param name="goal_tolerance" value="1"/>
+      <param name="frontier_tolerance" value="0.05"/>
+      <param name="random_frontier" value="false"/>
+      <param name="cmd_vel_topic" value="/tb3_0/cmd_vel"/>
+      <param name="map_frame" value="tb3_0/map"/>
+      <param name="base_frame" value="/tb3_0/base_footprint"/>
+      <param name="goal_topic" value="/tb3_0/move_base/current_goal"/>
+      <param name="frontier_topic" value="/tb3_0/frontiers"/>
+      <param name="planner_service" value="/tb3_0/move_base/NavfnROS/make_plan"/>
+    </node>
+
+  </group> 
+  
+   <node pkg="costmap_2d" type="costmap_2d_node" name="costmap_for_exploration_global_1" respawn="true" >
+    
+    <rosparam ns="costmap" subst_value="true">
+      global_frame: tb3_1/map
+      robot_base_frame: tb3_1/base_footprint
+      update_frequency: 10.0
+      publish_frequency: 10.0
+      rolling_window: false
+      always_send_full_costmap: true
+      # Map management parameters
+      unknown_cost_value: 255
+      
+      robot_radius: 0.3
+      plugins: 
+        - {name: static, type: "costmap_2d::StaticLayer"}
+        - {name: inflation,        type: "costmap_2d::InflationLayer"}  
+      static:
+        #Can pull data from gmapping, map_server or a non-rolling costmap            
+        map_topic: map_merge
+        subscribe_to_updates: true 
+      inflation:
+        inflation_radius: 0.1
+
+    </rosparam>
+  </node>
+ 
+  <group ns = "$(arg second_tb3)">
+
+
+   <node pkg="frontier_allocation" type="frontier_detection" name="frontier_detection_1" output="screen">
+      <param name="map" value="/costmap_for_exploration_global/costmap/costmap"/>
+      <param name="min_frontier_size_px" value="30"/>
+      <param name="base_frame" value="/tb3_1/base_footprint"/>
+      <param name="frontiers_topic" value="/tb3_1/frontiers"/>
+
+
+
+
+    </node>
+  
+      <node pkg="frontier_allocation" type="frontier_allocation" name="frontier_allocation_1" output="screen">
+      <param name="goal_tolerance" value="1"/>
+      <param name="frontier_tolerance" value="0.05"/>
+      <param name="random_frontier" value="false"/>
+      <param name="cmd_vel_topic" value="/tb3_1/cmd_vel"/>
+      <param name="map_frame" value="tb3_1/map"/>
+      <param name="base_frame" value="/tb3_1/base_footprint"/>
+      <param name="goal_topic" value="/tb3_1/move_base/current_goal"/>
+      <param name="frontier_topic" value="/tb3_1/frontiers"/>
+      <param name="planner_service" value="/tb3_1/move_base/NavfnROS/make_plan"/>
+      <param name="goal_topic_other" value="/tb3_0/move_base/current_goal"/>
+
+    </node>
+
+  </group> 
+  
+  
+  
+  
+  
+  
+  
+  
+    <!-- Open rviz for two robots -->
+   
+  <node pkg="rviz" type="rviz" name="rviz"
+    args="-d $(find multi_robot_exploration)/config/two_tb.rviz"/>
+ 
+
+ 
+   <include file="$(find turtlebot3_gazebo)/launch/multi_turtlebot3_slam.launch">
+    <arg name="ns"  value="$(arg first_tb3)"/>
+  </include>
+  
+   <include file="$(find turtlebot3_gazebo)/launch/multi_turtlebot3_slam.launch">
+    <arg name="ns"  value="$(arg second_tb3)"/>
+  </include>
+  
+ 
+
+  
+ 
+  <!-- Add the following transforms to resolve map and namespace mismatch -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_base_footprint"  args="0 0 0 0 0 0 /$(arg first_tb3)/base_footprint /$(arg first_tb3)/$(arg first_tb3)/base_footprint "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_base_link"       args="0 0 0 0 0 0 /$(arg first_tb3)/base_link /$(arg first_tb3)/$(arg first_tb3)/base_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_left_wheel"      args="0 0 0 0 0 0 /$(arg first_tb3)/wheel_left_link /$(arg first_tb3)/$(arg first_tb3)/wheel_left_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_right_wheel"     args="0 0 0 0 0 0 /$(arg first_tb3)/wheel_right_link /$(arg first_tb3)/$(arg first_tb3)/wheel_right_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_scan"            args="0 0 0 0 0 0 /$(arg first_tb3)/base_scan /$(arg first_tb3)/$(arg first_tb3)/base_scan "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_caster"          args="0 0 0 0 0 0 /$(arg first_tb3)/caster_back_link /$(arg first_tb3)/$(arg first_tb3)/caster_back_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_imu"             args="0 0 0 0 0 0 /$(arg first_tb3)/imu_link /$(arg first_tb3)/$(arg first_tb3)/imu_link "/>
+  
+    <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_map"             args="0 0 0 0 0 0 /$(arg first_tb3)/map /$(arg first_tb3)/$(arg first_tb3)/map "/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_scan_t"             args="0 0 0 0 0 0 /$(arg first_tb3)/scan /$(arg first_tb3)/$(arg first_tb3)/scan "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_link"             args="0 0 0 0 0 0 /$(arg first_tb3)/base_footprint /$(arg first_tb3)/base_link "/>
+ 
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_base_scan"             args="0 0 0 0 0 0 /$(arg first_tb3)/base_scan /$(arg first_tb3)/scan "/>
+  
+ <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg first_tb3)_tf_broadcaster_scan_scan"             args="0 0 0 0 0 0 /$(arg first_tb3)/$(arg first_tb3)/scan /$(arg first_tb3)/scan"/>
+  
+  
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_base_footprint"  args="0 0 0 0 0 0 /$(arg second_tb3)/base_footprint /$(arg second_tb3)/$(arg second_tb3)/base_footprint "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_base_link"       args="0 0 0 0 0 0 /$(arg second_tb3)/base_link /$(arg second_tb3)/$(arg second_tb3)/base_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_left_wheel"      args="0 0 0 0 0 0 /$(arg second_tb3)/wheel_left_link /$(arg second_tb3)/$(arg second_tb3)/wheel_left_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_right_wheel"     args="0 0 0 0 0 0 /$(arg second_tb3)/wheel_right_link /$(arg second_tb3)/$(arg second_tb3)/wheel_right_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_scan"            args="0 0 0 0 0 0 /$(arg second_tb3)/base_scan /$(arg second_tb3)/$(arg second_tb3)/base_scan "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_caster"          args="0 0 0 0 0 0 /$(arg second_tb3)/caster_back_link /$(arg second_tb3)/$(arg second_tb3)/caster_back_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_imu"             args="0 0 0 0 0 0 /$(arg second_tb3)/imu_link /$(arg second_tb3)/$(arg second_tb3)/imu_link "/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="double_$(arg second_tb3)_tf_broadcaster_map"             args="0 0 0 0 0 0 /$(arg second_tb3)/map /$(arg second_tb3)/$(arg second_tb3)/map "/>
+  
+  
+  
+  
+  
+  
+  
+</launch>
