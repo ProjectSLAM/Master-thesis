@@ -140,10 +140,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(map_node src/map_expansion.cpp)
-add_executable(single_tb_FE src/single_tb_FE.cpp)
-add_executable(tb3_0_FE src/tb3_0_FE.cpp)
-add_executable(tb3_1_FE src/tb3_1_FE.cpp)
+ 
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -156,18 +153,7 @@ add_executable(tb3_1_FE src/tb3_1_FE.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries( map_node
-  ${catkin_LIBRARIES}
-)
-target_link_libraries( single_tb_FE
-  ${catkin_LIBRARIES}
-)
-target_link_libraries( tb3_0_FE
-  ${catkin_LIBRARIES}
-)
-target_link_libraries( tb3_1_FE
-  ${catkin_LIBRARIES}
-)
+ 
 
 #############
 ## Install ##
@@ -186,11 +172,7 @@ target_link_libraries( tb3_1_FE
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 install(TARGETS
-  map_node
-  single_tb_FE
-  tb3_0_FE
-  tb3_1_FE
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ 
 )
 # install(TARGETS ${PROJECT_NAME}_map_node
 #    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
