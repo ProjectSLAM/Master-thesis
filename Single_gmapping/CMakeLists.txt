@@ -58,6 +58,7 @@ tf2_ros
 # )
 
 ## Generate services in the 'srv' folder
+ 
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -154,7 +155,6 @@ include_directories(
 
 ## Specify libraries to link a library or executable target against
  
-
 #############
 ## Install ##
 #############
@@ -172,7 +172,7 @@ include_directories(
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 install(TARGETS
- 
+  
 )
 # install(TARGETS ${PROJECT_NAME}_map_node
 #    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
