@@ -1,8 +1,7 @@
 # Master-thesis
-Code used in my Master thesis 
+Code used in my Master thesis. All the credits are given in the corresponding folder. 
 
-All the credits are given in the corresponding folder. 
-
+How code are working : 
 It is assumed that ROS noetic is already correctly working. 
 
 To correctly work the following package are requiered :
