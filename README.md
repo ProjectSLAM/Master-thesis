@@ -16,3 +16,6 @@ Then, to perform an experiment on simulation :
 - If running an experiment with only one robot : change line 133 in auto.py from "/map_merge" to "tb3_0/map" and the same in the file "map_saver.launch" in the launch file. 
 -choose one of the package amongst :Single_gmapping, Single_hector, multi_robot_exploration_2_hector, multi_robot_exploration_gmapping
 - On the terminal run " roslaunch multi_robot_exploration two_tb_exploration.launch "
+- everythings will be perfome automatically untill the end of the experiment. 
+
+A little issue is that all the four package related to simulation have the same name. Therefore only one of them should be in your catkins_ws. Meaning that you have to choose which experiment you want to run and remove the others from yours catkins_workspace. 
