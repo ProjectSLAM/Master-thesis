@@ -174,11 +174,11 @@
  
 
  
-   <include file="$(find turtlebot3_gazebo)/launch/multi_turtlebot3_slam.launch">
+   <include file="$(find multi_robot_exploration)/launch/multi_turtlebot3_slam.launch">
     <arg name="ns"  value="$(arg first_tb3)"/>
   </include>
   
-   <include file="$(find turtlebot3_gazebo)/launch/multi_turtlebot3_slam.launch">
+   <include file="$(find multi_robot_exploration)/launch/multi_turtlebot3_slam.launch">
     <arg name="ns"  value="$(arg second_tb3)"/>
   </include>
   
