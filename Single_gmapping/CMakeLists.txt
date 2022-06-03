@@ -58,11 +58,6 @@ tf2_ros
 # )
 
 ## Generate services in the 'srv' folder
-add_service_files(
-  FILES
-  tb3_0_start.srv
-  tb3_1_start.srv
-)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
