@@ -9,6 +9,7 @@ The following package are requiered :
 - Turtlebot3 description : https://github.com/ROBOTIS-GIT/turtlebot3/tree/master/turtlebot3_description
 - Aws robotic environment : https://github.com/aws-robotics/aws-robomaker-bookstore-world
 -  M-explore : https://github.com/hrnr/m-explore
+-  Hector Slam : https://github.com/tu-darmstadt-ros-pkg/hector_slam
 
 Then, to perform an experiment on simulation :
 -In the map_metrics folder, go to auto.py. Go to line 144 and change the path corresponding to your path to the file map_saver.launch. 
